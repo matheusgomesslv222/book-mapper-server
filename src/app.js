@@ -1,5 +1,5 @@
 //import { openDb } from './dataBase/configDb.js';
-//import { createTable } from './dataBase/Controller/User.js';
+//import { createTable , insertUsuario } from './dataBase/Controller/User.js';
 import express from 'express';
 import cors from 'cors';
 

@@ -11,11 +11,18 @@ import crypto from 'crypto';
 // }
 
 export async function insertUsuario(usuario){
-     usuario = usuario.body
-    console.log(usuario)
-    await openDb().then(db =>{
-         db.run('INSERT INTO User (nome , sobrenome , email , numero_telefone, senha) VALUES (?, ?, ?, ?, ?)', [usuario.nome , usuario.sobrenome, usuario.email, usuario.numero_telefone, usuario.senha]);
-    })
+    const { nome, sobrenome, email, telefone, senha } = usuario.body;
+    console.log(usuario.body)
+
+    await openDb().then(db => {
+      db.run('INSERT INTO User (nome, sobrenome, email, senha, telefone) VALUES (?, ?, ?, ?, ?)', [
+        usuario.body.nome,
+        usuario.body.sobrenome,
+        usuario.body.email,
+        usuario.body.senha,
+        usuario.body.telefone,
+      ]);
+    });
 }
 
 const secretKey = crypto.randomBytes(32).toString('hex');

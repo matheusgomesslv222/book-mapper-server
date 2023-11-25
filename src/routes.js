@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { insertUsuario , authUser } from './dataBase/Controller/User.js';
 import { newEstante , estantes, adicionarLivroEstante ,livrosEstante ,deletarLivro} from './dataBase/Controller/Estante.js';
 
 const router = Router();
@@ -10,6 +11,8 @@ router.get('/', (req,res) => {
     });
 });
 
+router.post('/login', authUser);
+router.post('/cadastro', insertUsuario);
 
 router.post('/estante', newEstante);
 router.post('/adicionarLivroAEstante', adicionarLivroEstante);
