@@ -46,12 +46,17 @@ export async function estantes (req, res){
 
   export async function adicionarLivroEstante(req, res) {
     const { livro, estanteID } = req.body;
-    console.log('seu livro: ', livro.volumeInfo.title);
+    console.log('seu livro: ', livro.volumeInfo.thumbnail);
+    
     const Titulo = livro.volumeInfo.title
     const Autor = livro.volumeInfo.authors[0]
     const Descricao = livro.volumeInfo.description
     const livroCod = livro.id;
-    const img = livro.volumeInfo.imageLinks.thumbnail;
+
+    // Verifique se 'imageLinks' e 'thumbnail' estão presentes
+    const img = livro.volumeInfo.imageLinks && livro.volumeInfo.imageLinks.thumbnail
+      ? livro.volumeInfo.imageLinks.thumbnail
+      : null;  // ou defina uma URL de fallback ou uma string vazia, dependendo do seu caso
 
     console.log('SEU ID: ',estanteID)
     const db = await openDb();
@@ -59,7 +64,7 @@ export async function estantes (req, res){
         // Inserir o livro na tabela de livros
         const result = await db.run(
             'INSERT INTO Livro (Titulo , Autor, Descricao, EstanteID, livroCod, img ) VALUES (?, ?, ?, ?, ?, ?)',
-            [Titulo, Autor,Descricao, estanteID , livroCod, img]
+            [Titulo, Autor, Descricao, estanteID , livroCod, img]
         );
 
         // Verificar se a inserção foi bem-sucedida
@@ -73,6 +78,7 @@ export async function estantes (req, res){
         return { success: false, message: 'Erro interno no servidor.' };
     }
 }
+
 
 export async function livrosEstante(req, res) {
   
@@ -105,6 +111,29 @@ export async function deletarLivro(req, res) {
     }
   } catch (error) {
     console.error('Erro ao deletar livro:', error);
+    res.status(500).json({ success: false, message: 'Erro interno no servidor.' });
+  }
+}
+
+
+export async function atualizarLinkCapa(req, res) {
+  const { livroId } = req.params;
+  const { novoLinkCapa } = req.body;
+
+  try {
+    const db = await openDb();
+
+    // Atualize o link da capa do livro com base no ID
+    const result = await db.run('UPDATE Livro SET img = ? WHERE LivroID = ?', [novoLinkCapa, livroId]);
+
+    // Verificar se a atualização foi bem-sucedida
+    if (result.changes > 0) {
+      res.status(200).json({ success: true, message: 'Link da capa atualizado com sucesso.' });
+    } else {
+      res.status(404).json({ success: false, message: 'Livro não encontrado.' });
+    }
+  } catch (error) {
+    console.error('Erro ao atualizar link da capa:', error);
     res.status(500).json({ success: false, message: 'Erro interno no servidor.' });
   }
 }
